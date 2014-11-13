@@ -8,7 +8,7 @@ module Lipstick
       # Public: Initialize session.
     #
     # params - Hash
-    # * +:url+ - API endpoint, eg. https://example.com/membership.php
+    # * +:url+ - API endpoint, eg. https://example.com/admin
     # * +:username+
     # * +:password+
     # * +:logger+
@@ -17,11 +17,6 @@ module Lipstick
         @username = params[:username] or raise("username missing")
         @password = params[:password] or raise("password missing")
         @logger   = params[:logger] || Logger.new(STDOUT)
-
-        @uri = URI.parse(@base_url)
-        @http = Net::HTTP.new(@uri.host, @uri.port)
-        @http.use_ssl = true
-        @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
 
       def validate_credentials
@@ -36,12 +31,29 @@ module Lipstick
 
         params.merge!(username: username, password: password)
 
-        request = Net::HTTP::Post.new(@uri.request_uri)
-        request.set_form_data(params)
+        uri = uri_for(method)
+        response = post_form(uri, params)
 
-        response = @http.request(request)
         logger.info "response = #{response.inspect}"
         response
+      end
+
+      def uri_for(method)
+        api = ['NewOrder'].include?(method) ? 'transact' : 'membership'
+        URI.parse("#{base_url}/#{api}.php")
+      end
+
+      def post_form(uri, params)
+        post = Net::HTTP::Post.new(uri.request_uri)
+        post.set_form_data(params)
+        request(uri, post)
+      end
+
+      def request(uri, request)
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        http.request(request)
       end
     end
   end
