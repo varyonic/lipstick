@@ -17,12 +17,22 @@ module Lipstick
         @logger   = params[:logger] || Logger.new(STDOUT)
       end
 
+      def shipping_method_find(params = {})
+        call_api(:shipping_method_find, campaign_id: 'all')
+      end
+
       def validate_credentials
         response = call(:validate_credentials, username: username, password: password)
         response.body == '100'
       end
 
       protected
+      def call_api(method, params = {})
+        api_response = parse_response call(method, params)
+        logger.info "API response = #{api_response.inspect}"
+        api_response
+      end
+
       def call(method, params = {})
         params = params.merge(method: method)
         logger.info "request = #{params.inspect}"
@@ -52,6 +62,15 @@ module Lipstick
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         http.request(request)
+      end
+
+      def parse_response(response)
+        params = CGI::unescape(response.body).split('&').inject({}) do |h,kv|
+          k,v = kv.split('=')
+          k = k.to_sym if k.match(/\w/)
+          h.merge( k => v )
+        end
+        Lipstick::Api::Response.new(params)
       end
     end
   end
