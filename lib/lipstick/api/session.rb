@@ -22,7 +22,7 @@ module Lipstick
         raise("username missing") unless params[:username]
         raise("password missing") unless params[:password]
         @credentials = { username: params[:username], password: params[:password] }
-        @logger   = params[:logger] || Logger.new(STDOUT)
+        @logger   = params[:logger] || Logger.new('/dev/null')
       end
 
       def shipping_method_find(params = {})

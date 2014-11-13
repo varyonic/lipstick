@@ -4,7 +4,9 @@ include Lipstick::Fixtures
 
 describe 'Lipstick::Api::Session' do
   before(:each) do
-    @session = Lipstick::Api::Session.new(fixtures(:credentials))
+    params = fixtures(:credentials)
+    params[:logger] = Logger.new(STDOUT) if ENV['DEBUG_LIPSTICK'] == 'true'
+    @session = Lipstick::Api::Session.new(params)
   end
 
   describe '#shipping_method_find' do
