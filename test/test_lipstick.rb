@@ -3,10 +3,26 @@ require 'helper'
 include Lipstick::Fixtures
 
 describe 'Lipstick::Api::Session' do
+  let (:order_params) {
+    {
+      first_name: 'Jim',
+      last_name:  'Smith',
+      phone:      '(555)555-5555',
+      email:      'test@test.com', # jim.smith@example.com'
+      credit_card_type: 'visa',
+      credit_card_number: fixtures(:test_card_number),
+      expiration_date: '1219',
+      "CVV" => '123',
+      tran_type: 'NewOrder',
+      ip_address: '127.0.0.1',
+      upsell_count: 0,
+    }.update(address('shipping')).update(address('billing'))
+  }
   before(:each) do
     params = fixtures(:credentials)
     params[:logger] = Logger.new(STDOUT) if ENV['DEBUG_LIPSTICK'] == 'true'
     @session = Lipstick::Api::Session.new(params)
+    @test_card_number = fixtures(:test_card_number)
   end
 
   describe '#campaign_find_active' do
@@ -29,6 +45,31 @@ describe 'Lipstick::Api::Session' do
     end
   end
 
+  describe '#new_order' do
+    before (:each) do
+      api_response = @session.campaign_find_active
+      @campaign_id = api_response.campaign_id.sample
+      @campaign = @session.campaign_view(@campaign_id)
+      @product_id = @campaign.product_id.sample
+      @shipping_method_id = @campaign.shipping_id.sample
+    end
+
+    it "creates order" do
+      api_response = @session.new_order(order_params.merge(
+        campaign_id: @campaign_id,
+        product_id: @product_id,
+        shipping_id: @shipping_method_id,
+        )
+      )
+      assert api_response.code == 100
+      assert api_response.test, "Expected #{api_response.test.inspect} to be true"
+      assert api_response.customer_id.is_a?(Integer), "Expected #{api_response.customer_id.inspect} to be an integer"
+      assert api_response.order_id.is_a?(Integer)
+      assert api_response.transaction_id == 'Not Available'
+      assert api_response.auth_id == 'Not Available'
+    end
+  end
+
   describe '#shipping_method_find' do
     it "finds shipping methods" do
       api_response = @session.shipping_method_find
@@ -48,6 +89,13 @@ describe 'Lipstick::Api::Session' do
       @invalid_session = Lipstick::Api::Session.new(invalid_credentials)
       api_response = @invalid_session.validate_credentials
       assert api_response.code == 200, "Invalid credentials not detected."
+    end
+  end
+
+  describe '#underscore' do
+    it 'munges whatsit' do
+      foobar = @session.underscore('FooBar')
+      assert foobar == 'foo_bar', ">> #{foobar} <<"
     end
   end
 end

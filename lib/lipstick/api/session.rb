@@ -53,6 +53,22 @@ module Lipstick
         end
       end
 
+      # Create order for new customer
+      def new_order(params)
+        camelcase_params!(params)
+
+        call_api('NewOrder', params) do |fields|
+          fields.keys.each do |key|
+            fields[underscore(key.to_s).to_sym] = fields.delete(key)
+          end
+          if fields[:response_code] == '100'
+            fields[:test] = (fields[:test] == '1')
+            fields[:customer_id] = fields.delete(:customer_id).to_i
+            fields[:order_id] = fields.delete(:order_id).to_i
+          end
+        end
+      end
+
       def shipping_method_find(params = {})
         call_api(:shipping_method_find, campaign_id: 'all')
       end
@@ -61,7 +77,28 @@ module Lipstick
         call_api(:validate_credentials)
       end
 
+      # partly copied from activesupport/inflector
+      def underscore(camel_cased_word)
+        word = camel_cased_word.to_s.dup
+        word.gsub!(/([A-Z\d]+)([A-Z][a-z])/,'\1_\2')
+        word.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
+        word.tr!("-", "_")
+        word.tr!("[", "_")
+        word.tr!("]", "")
+        word.downcase!
+        word
+      end
+
       protected
+      # Munge params into style accepted by transaction API.
+      def camelcase_params!(params)
+        params.keys.select {|key| key.is_a?(Symbol) && key.to_s.include?(?_) }.each do |key|
+          camelcase_key = key.to_s.split("_").each {|s| s.capitalize! }.join('')
+          camelcase_key[0] = camelcase_key[0].chr.downcase
+          params[camelcase_key] = params.delete(key)
+        end
+      end
+
       def call_api(method, params = {}, &block)
         params = params.merge(method: method)
         logger.info "request = #{params.inspect}"

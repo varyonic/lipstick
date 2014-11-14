@@ -37,6 +37,17 @@ module Lipstick
     HOME_DIR = RUBY_PLATFORM =~ /mswin32/ ? ENV['HOMEPATH'] : ENV['HOME'] unless defined?(HOME_DIR)
     LOCAL_CREDENTIALS = File.join(HOME_DIR.to_s, '.lipstick/fixtures.yml') unless defined?(LOCAL_CREDENTIALS)
 
+    def address(prefix, options = {})
+      {
+        "#{prefix}Address1" => '1234 My Street',
+        "#{prefix}Address2" => 'Apt 1',
+        "#{prefix}City"     => 'Ottawa',
+        "#{prefix}State"    => 'ON',
+        "#{prefix}Zip"      => 'K1C2N6',
+        "#{prefix}Country"  => 'CA',
+      }.update(options)
+    end
+
     def all_fixtures
       @@fixtures ||= load_fixtures
     end
