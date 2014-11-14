@@ -9,9 +9,30 @@ describe 'Lipstick::Api::Session' do
     @session = Lipstick::Api::Session.new(params)
   end
 
+  describe '#campaign_find_active' do
+    it "finds all active campaigns" do
+      api_response = @session.campaign_find_active
+      assert api_response.code == 100
+      assert api_response.campaign_id.is_a?(Array)
+      assert api_response.campaign_name.is_a?(Array)
+    end
+  end
+
+  describe '#campaign_view' do
+    it "fetches attributes of a campaign" do
+      api_response = @session.campaign_find_active
+      campaign_id = api_response.campaign_id.sample
+      api_response = @session.campaign_view(campaign_id)
+      assert api_response.code == 100
+      assert api_response.product_id.is_a?(Array)
+      assert api_response.shipping_id.is_a?(Array)
+    end
+  end
+
   describe '#shipping_method_find' do
     it "finds shipping methods" do
       api_response = @session.shipping_method_find
+      assert api_response.code == 100
       assert api_response.respond_to?(:shipping_ids) == true, "Does not respond to shipping_ids"
     end
   end
