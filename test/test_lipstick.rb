@@ -16,13 +16,15 @@ describe 'Lipstick::Api::Session' do
 
   describe "validate_credentials" do
     it "returns true if credentials valid" do
-      assert @session.validate_credentials == true, "Credentials not valid."
+      api_response = @session.validate_credentials
+      assert api_response.code == 100, "Credentials not valid."
     end
 
     it "returns false if credentials invalid" do
       invalid_credentials = fixtures(:credentials).merge!(password: 'invalid')
       @invalid_session = Lipstick::Api::Session.new(invalid_credentials)
-      assert @invalid_session.validate_credentials == false, "Invalid credentials not detected."
+      api_response = @invalid_session.validate_credentials
+      assert api_response.code == 200, "Invalid credentials not detected."
     end
   end
 end

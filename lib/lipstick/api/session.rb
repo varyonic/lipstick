@@ -1,19 +1,27 @@
 module Lipstick
   module Api
     class Session
-      attr_reader :base_url, :username, :password, :logger
+      # API endpoint, eg. {https://example.com/admin}[https://example.com/admin]
+      attr_reader :base_url
+
+      # Hash containing :username, :password
+      attr_reader :credentials
+
+      # Used for logging request and response info.
+      attr_reader :logger
 
       # Public: Initialize session.
       #
       # params - Hash
-      # * +:url+ - API endpoint, eg. https://example.com/admin
+      # * +:url+ - API endpoint, eg. {https://example.com/admin}[https://example.com/admin]
       # * +:username+
       # * +:password+
-      # * +:logger+
+      # * +:logger+ - Used for logging request and response info.
       def initialize(params)
         @base_url = params[:url] || raise("url not defined.")
-        @username = params[:username] or raise("username missing")
-        @password = params[:password] or raise("password missing")
+        raise("username missing") unless params[:username]
+        raise("password missing") unless params[:password]
+        @credentials = { username: params[:username], password: params[:password] }
         @logger   = params[:logger] || Logger.new(STDOUT)
       end
 
@@ -22,28 +30,18 @@ module Lipstick
       end
 
       def validate_credentials
-        response = call(:validate_credentials, username: username, password: password)
-        response.body == '100'
+        call_api(:validate_credentials)
       end
 
       protected
       def call_api(method, params = {})
-        api_response = parse_response call(method, params)
-        logger.info "API response = #{api_response.inspect}"
-        api_response
-      end
-
-      def call(method, params = {})
         params = params.merge(method: method)
         logger.info "request = #{params.inspect}"
-
-        params.merge!(username: username, password: password)
-
-        uri = uri_for(method)
-        response = post_form(uri, params)
-
+        response = post_form(uri_for(method), params.merge(credentials))
         logger.info "response = #{response.inspect}"
-        response
+        api_response = parse_response(response)
+        logger.info "API response = #{api_response.inspect}"
+        api_response
       end
 
       def uri_for(method)
@@ -65,10 +63,14 @@ module Lipstick
       end
 
       def parse_response(response)
-        params = CGI::unescape(response.body).split('&').inject({}) do |h,kv|
-          k,v = kv.split('=')
-          k = k.to_sym if k.match(/\w/)
-          h.merge( k => v )
+        params = if response.body.include?(?=)
+          CGI::unescape(response.body).split('&').inject({}) do |h,kv|
+            k,v = kv.split('=')
+            k = k.to_sym if k.match(/\w/)
+            h.merge( k => v )
+          end
+        else
+          { response_code: response.body }
         end
         Lipstick::Api::Response.new(params)
       end
