@@ -74,4 +74,8 @@ module Lipstick
   end
 end
 
+def context(*args, &block)
+  describe(*args, &block)
+end
+
 Minitest.autorun

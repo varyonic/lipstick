@@ -45,53 +45,49 @@ describe 'Lipstick::Api::Session' do
     end
   end
 
-  describe '#customer_find_active_product' do
-    before (:each) do
+  context "sample campaign" do
+    before (:all) do
       api_response = @session.campaign_find_active
       @campaign_id = api_response.campaign_id.sample
       @campaign = @session.campaign_view(@campaign_id)
       @product_id = @campaign.product_id.sample
       @shipping_method_id = @campaign.shipping_id.sample
-      api_response = @session.new_order(order_params.merge(
-        campaign_id: @campaign_id,
-        product_id:  @product_id,
-        shipping_id: @shipping_method_id,
+    end      
+
+    describe '#customer_find_active_product' do
+      before (:each) do
+        api_response = @session.new_order(order_params.merge(
+          campaign_id: @campaign_id,
+          product_id:  @product_id,
+          shipping_id: @shipping_method_id,
+          )
         )
-      )
-      puts api_response.inspect
-      @customer_id = api_response.customer_id
+        @customer_id = api_response.customer_id
+      end
+
+      it "fetches product ids" do
+        api_response = @session.customer_find_active_product(@customer_id)
+        assert api_response.code == 100
+        assert api_response.product_ids.is_a?(Array)
+        assert api_response.product_ids[0].is_a?(Integer)
+      end
     end
 
-    it "fetches product ids" do
-      api_response = @session.customer_find_active_product(@customer_id)
-      assert api_response.code == 100
-      assert api_response.product_ids.is_a?(Array)
-      assert api_response.product_ids[0].is_a?(Integer)
-    end
-  end
-
-  describe '#new_order' do
-    before (:each) do
-      api_response = @session.campaign_find_active
-      @campaign_id = api_response.campaign_id.sample
-      @campaign = @session.campaign_view(@campaign_id)
-      @product_id = @campaign.product_id.sample
-      @shipping_method_id = @campaign.shipping_id.sample
-    end
-
-    it "creates order" do
-      api_response = @session.new_order(order_params.merge(
-        campaign_id: @campaign_id,
-        product_id:  @product_id,
-        shipping_id: @shipping_method_id,
+    describe '#new_order' do
+      it "creates order" do
+        api_response = @session.new_order(order_params.merge(
+          campaign_id: @campaign_id,
+          product_id:  @product_id,
+          shipping_id: @shipping_method_id,
+          )
         )
-      )
-      assert api_response.code == 100
-      assert api_response.test, "Expected #{api_response.test.inspect} to be true"
-      assert api_response.customer_id.is_a?(Integer), "Expected #{api_response.customer_id.inspect} to be an integer"
-      assert api_response.order_id.is_a?(Integer)
-      assert api_response.transaction_id == 'Not Available'
-      assert api_response.auth_id == 'Not Available'
+        assert api_response.code == 100
+        assert api_response.test, "Expected #{api_response.test.inspect} to be true"
+        assert api_response.customer_id.is_a?(Integer), "Expected #{api_response.customer_id.inspect} to be an integer"
+        assert api_response.order_id.is_a?(Integer)
+        assert api_response.transaction_id == 'Not Available'
+        assert api_response.auth_id == 'Not Available'
+      end
     end
   end
 
