@@ -81,8 +81,14 @@ module Lipstick
         end
       end
 
-      def shipping_method_find(params = {})
-        call_api(:shipping_method_find, campaign_id: 'all')
+      def shipping_method_find(campaign_id = 'all')
+        call_api(:shipping_method_find, campaign_id: campaign_id) do |fields|
+          if fields[:response_code] == '100'
+            [:shipping_ids].each do |key|
+              fields[key] = CSV.parse_line(fields[key]).map(&:to_i)
+            end
+          end
+        end
       end
 
       def validate_credentials

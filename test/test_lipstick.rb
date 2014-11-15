@@ -123,7 +123,8 @@ describe 'Lipstick::Api::Session' do
     it "finds shipping methods" do
       api_response = @session.shipping_method_find
       assert api_response.code == 100
-      assert api_response.respond_to?(:shipping_ids) == true, "Does not respond to shipping_ids"
+      assert api_response.shipping_ids.is_a?(Array)
+      assert api_response.shipping_ids[0].is_a?(Integer)
     end
   end
 
