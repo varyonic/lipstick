@@ -106,6 +106,24 @@ describe 'Lipstick::Api::Session' do
         assert api_response.code == 100
       end
     end
+
+    describe '#order_void' do
+      before (:each) do
+        api_response = @session.new_order(order_params.merge(
+          campaign_id: @campaign_id,
+          product_id:  @product_id,
+          shipping_id: @shipping_method_id,
+          )
+        )
+        @order_id = api_response.order_id
+      end
+
+      it "cancels a new order" do
+        api_response = @session.order_void(@order_id)
+        assert api_response.code == 100
+      end
+    end
+
   end
 
   describe '#customer_find_active_product' do

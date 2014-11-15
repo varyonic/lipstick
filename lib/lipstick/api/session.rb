@@ -88,6 +88,10 @@ module Lipstick
                  keep_recurring: keep_recurring ? '1' : '0')
       end
 
+      def order_void(order_id)
+        call_api(:order_void, order_id: order_id)
+      end
+
       def shipping_method_find(campaign_id = 'all')
         call_api(:shipping_method_find, campaign_id: campaign_id) do |fields|
           if fields[:response_code] == '100'
