@@ -81,6 +81,13 @@ module Lipstick
         end
       end
 
+      def order_refund(order_id, amount, keep_recurring = true)
+        call_api(:order_refund,
+                 order_id: order_id,
+                 amount: amount.to_s,
+                 keep_recurring: keep_recurring ? '1' : '0')
+      end
+
       def shipping_method_find(campaign_id = 'all')
         call_api(:shipping_method_find, campaign_id: campaign_id) do |fields|
           if fields[:response_code] == '100'
