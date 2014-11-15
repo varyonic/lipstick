@@ -52,25 +52,6 @@ describe 'Lipstick::Api::Session' do
       @campaign = @session.campaign_view(@campaign_id)
       @product_id = @campaign.product_id.sample
       @shipping_method_id = @campaign.shipping_id.sample
-    end      
-
-    describe '#customer_find_active_product' do
-      before (:each) do
-        api_response = @session.new_order(order_params.merge(
-          campaign_id: @campaign_id,
-          product_id:  @product_id,
-          shipping_id: @shipping_method_id,
-          )
-        )
-        @customer_id = api_response.customer_id
-      end
-
-      it "fetches product ids" do
-        api_response = @session.customer_find_active_product(@customer_id)
-        assert api_response.code == 100
-        assert api_response.product_ids.is_a?(Array)
-        assert api_response.product_ids[0].is_a?(Integer)
-      end
     end
 
     describe '#new_order' do
@@ -90,7 +71,7 @@ describe 'Lipstick::Api::Session' do
       end
     end
 
-    describe '#order_refund' do
+    context "existing order" do
       before (:each) do
         api_response = @session.new_order(order_params.merge(
           campaign_id: @campaign_id,
@@ -99,31 +80,33 @@ describe 'Lipstick::Api::Session' do
           )
         )
         @order_id = api_response.order_id
+        @customer_id = api_response.customer_id
       end
 
-      it "refunds the customer" do
-        api_response = @session.order_refund(@order_id, 0.01)
-        assert api_response.code == 100
+      describe '#customer_find_active_product' do
+        it "fetches product ids" do
+          api_response = @session.customer_find_active_product(@customer_id)
+          assert api_response.code == 100
+          assert api_response.product_ids.is_a?(Array)
+          assert api_response.product_ids[0].is_a?(Integer)
+        end
       end
+
+      describe '#order_refund' do
+        it "refunds the customer" do
+          api_response = @session.order_refund(@order_id, 0.01)
+          assert api_response.code == 100
+        end
+      end
+
+      describe '#order_void' do
+        it "cancels a new order" do
+          api_response = @session.order_void(@order_id)
+          assert api_response.code == 100
+        end
+      end
+
     end
-
-    describe '#order_void' do
-      before (:each) do
-        api_response = @session.new_order(order_params.merge(
-          campaign_id: @campaign_id,
-          product_id:  @product_id,
-          shipping_id: @shipping_method_id,
-          )
-        )
-        @order_id = api_response.order_id
-      end
-
-      it "cancels a new order" do
-        api_response = @session.order_void(@order_id)
-        assert api_response.code == 100
-      end
-    end
-
   end
 
   describe '#customer_find_active_product' do
@@ -132,19 +115,22 @@ describe 'Lipstick::Api::Session' do
       @campaign_id = api_response.campaign_id.sample
       @campaign = @session.campaign_view(@campaign_id)
       @product_id = @campaign.product_id.sample
+      @credit_card_type = @campaign.payment_name.sample
       @shipping_method_id = @campaign.shipping_id.sample
       api_response = @session.new_order(order_params.merge(
         campaign_id: @campaign_id,
         product_id:  @product_id,
+        credit_card_type: @credit_card_type,
         shipping_id: @shipping_method_id,
         )
       )
+      assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
       @customer_id = api_response.customer_id
     end
 
     it "fetches product ids" do
       api_response = @session.customer_find_active_product(@customer_id)
-      assert api_response.code == 100
+      assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
       assert api_response.product_ids.is_a?(Array)
       assert api_response.product_ids[0].is_a?(Integer)
     end
