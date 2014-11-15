@@ -53,6 +53,18 @@ module Lipstick
         end
       end
 
+      def customer_find_active_product(customer_id, campaign_id = nil)
+        params = { customer_id: customer_id }
+        params.merge!(campaign_id: campaign_id) if campaign_id
+        call_api(:customer_find_active_product, params) do |fields|
+          if fields[:response_code] == '100'
+            [:product_ids].each do |key|
+              fields[key] = CSV.parse_line(fields[key]).map(&:to_i)
+            end
+          end
+        end
+      end
+
       # Create order for new customer
       def new_order(params)
         camelcase_params!(params)
