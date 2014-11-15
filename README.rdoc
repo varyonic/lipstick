@@ -1,6 +1,11 @@
-= lipstick
+= Lipstick
 
-Description goes here.
+Unofficial ruby wrapper for the following Lime Light CRM APIs:
+
+* {Membership API}[http://help.limelightcrm.com/entries/317874-Membership-API-Documentation]
+* {Transaction API}[http://help.limelightcrm.com/entries/22934241-Transaction-API-Documentation]
+
+Note this wrapper attempts to fix some of the inconsistencies in the underlying APIs.
 
 == Contributing to lipstick
  
@@ -14,6 +19,6 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2014 Piers Chambers. See LICENSE.txt for
+Copyright (c) 2014 Piers Chambers and South Beach Skin Care, LLC. See LICENSE.txt for
 further details.
 
