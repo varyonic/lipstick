@@ -122,6 +122,7 @@ module Lipstick
         logger.info "request = #{params.inspect}"
         response = post_form(uri_for(method), params.merge(credentials))
         logger.info "response = #{response.inspect}"
+        logger.debug "response.body = #{response.body}"
         api_response = parse_response(response, &block)
         logger.info "API response = #{api_response.inspect}"
         api_response
