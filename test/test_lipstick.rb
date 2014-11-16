@@ -9,7 +9,6 @@ describe 'Lipstick::Api::Session' do
       last_name:  'Smith',
       phone:      '(555)555-5555',
       email:      'test@test.com', # jim.smith@example.com'
-      credit_card_type: 'visa',
       credit_card_number: fixtures(:test_card_number),
       expiration_date: '1219',
       "CVV" => '123',
@@ -51,6 +50,7 @@ describe 'Lipstick::Api::Session' do
       @campaign_id = api_response.campaign_id.sample
       @campaign = @session.campaign_view(@campaign_id)
       @product_id = @campaign.product_id.sample
+      @credit_card_type = @campaign.payment_name.sample
       @shipping_method_id = @campaign.shipping_id.sample
     end
 
@@ -59,6 +59,7 @@ describe 'Lipstick::Api::Session' do
         api_response = @session.new_order(order_params.merge(
           campaign_id: @campaign_id,
           product_id:  @product_id,
+          credit_card_type: @credit_card_type,
           shipping_id: @shipping_method_id,
           )
         )
@@ -76,6 +77,7 @@ describe 'Lipstick::Api::Session' do
         api_response = @session.new_order(order_params.merge(
           campaign_id: @campaign_id,
           product_id:  @product_id,
+          credit_card_type: @credit_card_type,
           shipping_id: @shipping_method_id,
           )
         )
@@ -106,6 +108,12 @@ describe 'Lipstick::Api::Session' do
         end
       end
 
+      describe '#order_update_recurring' do
+        it "cancels a new order" do
+          api_response = @session.order_update_recurring(@order_id,'stop')
+          assert api_response.code == 100
+        end
+      end
     end
   end
 
