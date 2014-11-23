@@ -3,25 +3,10 @@ require 'helper'
 include Lipstick::Fixtures
 
 describe 'Lipstick::Api::Session' do
-  let (:order_params) {
-    {
-      first_name: 'Jim',
-      last_name:  'Smith',
-      phone:      '(555)555-5555',
-      email:      'test@test.com', # jim.smith@example.com'
-      credit_card_number: fixtures(:test_card_number),
-      expiration_date: '1219',
-      "CVV" => '123',
-      tran_type: 'NewOrder',
-      ip_address: '127.0.0.1',
-      upsell_count: 0,
-    }.update(address('shipping')).update(address('billing'))
-  }
   before(:each) do
     params = fixtures(:credentials)
     params[:logger] = Logger.new(STDOUT) if ENV['DEBUG_LIPSTICK'] == 'true'
     @session = Lipstick::Api::Session.new(params)
-    @test_card_number = fixtures(:test_card_number)
   end
 
   describe '#campaign_find_active' do
@@ -45,6 +30,24 @@ describe 'Lipstick::Api::Session' do
   end
 
   context "sample campaign" do
+    let (:order_params) {
+      {
+        campaign_id: @campaign_id,
+        product_id:  @product_id,
+        first_name: 'Jim',
+        last_name:  'Smith',
+        phone:      '(555)555-5555',
+        email:      'test@test.com', # jim.smith@example.com'
+        credit_card_type: @credit_card_type,
+        credit_card_number: fixtures(:test_card_number),
+        expiration_date: '1219',
+        "CVV" => '123',
+        tran_type: 'NewOrder',
+        shipping_id: @shipping_method_id,
+        ip_address: '127.0.0.1',
+        upsell_count: 0,
+      }.update(address('shipping')).update(address('billing'))
+    }
     before (:all) do
       api_response = @session.campaign_find_active
       @campaign_id = api_response.campaign_id.sample
@@ -56,13 +59,7 @@ describe 'Lipstick::Api::Session' do
 
     describe '#new_order' do
       it "creates order" do
-        api_response = @session.new_order(order_params.merge(
-          campaign_id: @campaign_id,
-          product_id:  @product_id,
-          credit_card_type: @credit_card_type,
-          shipping_id: @shipping_method_id,
-          )
-        )
+        api_response = @session.new_order(order_params)
         assert api_response.code == 100
         assert api_response.test, "Expected #{api_response.test.inspect} to be true"
         assert api_response.customer_id.is_a?(Integer), "Expected #{api_response.customer_id.inspect} to be an integer"
@@ -74,13 +71,7 @@ describe 'Lipstick::Api::Session' do
 
     context "existing order" do
       before (:all) do
-        api_response = @session.new_order(order_params.merge(
-          campaign_id: @campaign_id,
-          product_id:  @product_id,
-          credit_card_type: @credit_card_type,
-          shipping_id: @shipping_method_id,
-          )
-        )
+        api_response = @session.new_order(order_params)
         @order_id = api_response.order_id
         @customer_id = api_response.customer_id
       end
@@ -142,14 +133,7 @@ describe 'Lipstick::Api::Session' do
 
     context "new order" do
       before (:each) do
-        api_response = @session.new_order(order_params.merge(
-          campaign_id: @campaign_id,
-          product_id:  @product_id,
-          credit_card_type: @credit_card_type,
-          shipping_id: @shipping_method_id,
-          )
-        )
-        @customer_id = api_response.customer_id
+        api_response = @session.new_order(order_params)
         @new_order_id = api_response.order_id
       end
 
