@@ -41,16 +41,7 @@ module Lipstick
 
       # Fetch details for a given campaign.
       def campaign_view(campaign_id)
-        call_api(:campaign_view, campaign_id: campaign_id) do |fields|
-          if fields[:response_code] == '100'
-            [:product_id, :product_name, :is_upsell,
-             :shipping_id, :shipping_name, :shipping_description,
-             :shipping_recurring_price, :shipping_initial_price,
-             :countries, :payment_name].each do |key|
-              fields[key] = CSV.parse_line(fields[key])
-            end
-          end
-        end
+        call_api(:campaign_view, campaign_id: campaign_id)
       end
 
       def customer_find_active_product(customer_id, campaign_id = nil)
@@ -168,11 +159,15 @@ module Lipstick
         word
       end
 
+      def camelize(str)
+        str.to_s.split("_").each {|s| s.capitalize! }.join
+      end
+
       protected
       # Munge params into style accepted by transaction API.
       def camelcase_params!(params)
         params.keys.select {|key| key.is_a?(Symbol) && key.to_s.include?(?_) }.each do |key|
-          camelcase_key = key.to_s.split("_").each {|s| s.capitalize! }.join('')
+          camelcase_key = camelize(key)
           camelcase_key[0] = camelcase_key[0].chr.downcase
           params[camelcase_key] = params.delete(key)
         end
@@ -184,7 +179,14 @@ module Lipstick
         response = post_form(uri_for(method), params.merge(credentials))
         logger.info "response = #{response.inspect}"
         logger.debug "response.body = #{response.body}"
-        api_response = parse_response(response, &block)
+        if block_given?
+          api_response = parse_response(response, &block)
+        else
+          fields = response_fields(response)
+          klassname = "#{camelize(method)}Response".to_sym
+          klass = Lipstick::Api.constants.include?(klassname) ? Lipstick::Api.const_get(klassname) : Lipstick::Api::Response
+          api_response = klass.new(fields)
+        end
         logger.info "API response = #{api_response.inspect}"
         api_response
       end
@@ -207,8 +209,8 @@ module Lipstick
         http.request(request)
       end
 
-      def parse_response(response, &block)
-        fields = if response.body.include?(?=)
+      def response_fields(response)
+        if response.body.include?(?=)
           CGI::unescape(response.body).split('&').inject({}) do |h,kv|
             k,v = kv.split('=')
             k = k.to_sym if k.match(/\w/)
@@ -217,6 +219,10 @@ module Lipstick
         else
           { response_code: response.body }
         end
+      end
+
+      def parse_response(response, &block)
+        fields = response_fields(response)
         yield fields if block_given?
         Lipstick::Api::Response.new(fields)
       end
