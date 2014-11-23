@@ -130,6 +130,14 @@ module Lipstick
         call_api(:order_update_recurring, order_id: order_id, status: status)
       end
 
+      def order_view(order_id)
+        call_api(:order_view, order_id: order_id) do |fields|
+          fields.keys.each do |key|
+            fields[underscore(key.to_s).to_sym] = fields.delete(key)
+          end
+        end          
+      end
+
       def order_void(order_id)
         call_api(:order_void, order_id: order_id)
       end

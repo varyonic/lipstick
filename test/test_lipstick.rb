@@ -110,6 +110,13 @@ describe 'Lipstick::Api::Session' do
         end
       end
 
+      describe '#order_view' do
+        it "returns details of an order" do
+          api_response = @session.order_view(@order_id)
+          assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
+        end
+      end
+
       describe '#order_void' do
         it "cancels a new order" do
           api_response = @session.order_void(@order_id)
