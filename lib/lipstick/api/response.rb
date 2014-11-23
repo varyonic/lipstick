@@ -105,10 +105,24 @@ module Lipstick
         1000 => 'SSL is required'
       }
       attr_reader :code, :message
-      
+
+      class << self
+        def csv_field(*args)
+          @csv_fields ||= []
+          @csv_fields = @csv_fields + args
+        end
+      end
+
       def initialize(resp)
         @code = resp.delete(:response_code).to_i
         @message = CODES[@code]
+
+        if @code == 100
+          self.class.csv_field.each do |key|
+            resp[key] = CSV.parse_line(resp[key])
+          end
+        end
+
         if !resp.empty?
           resp.each do |att, val|
             self.class.__send__(:attr_accessor, att)
