@@ -109,33 +109,6 @@ describe 'Lipstick::Api::Session' do
     end
   end
 
-  describe '#customer_find_active_product' do
-    before (:each) do
-      api_response = @session.campaign_find_active
-      @campaign_id = api_response.campaign_id.sample
-      @campaign = @session.campaign_view(@campaign_id)
-      @product_id = @campaign.product_id.sample
-      @credit_card_type = @campaign.payment_name.sample
-      @shipping_method_id = @campaign.shipping_id.sample
-      api_response = @session.new_order(order_params.merge(
-        campaign_id: @campaign_id,
-        product_id:  @product_id,
-        credit_card_type: @credit_card_type,
-        shipping_id: @shipping_method_id,
-        )
-      )
-      assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
-      @customer_id = api_response.customer_id
-    end
-
-    it "fetches product ids" do
-      api_response = @session.customer_find_active_product(@customer_id)
-      assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
-      assert api_response.product_ids.is_a?(Array)
-      assert api_response.product_ids[0].is_a?(Integer)
-    end
-  end
-
   describe '#shipping_method_find' do
     it "finds shipping methods" do
       api_response = @session.shipping_method_find
