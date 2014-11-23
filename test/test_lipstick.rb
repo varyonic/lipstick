@@ -94,6 +94,15 @@ describe 'Lipstick::Api::Session' do
         end
       end
 
+      describe '#order_find' do
+        it "returns orders matching criteria" do
+          api_response = @session.order_find(Time.now - 120, Time.now)
+          assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
+          assert api_response.order_ids.is_a?(Array)
+          assert api_response.order_ids[0].is_a?(Integer)
+        end
+      end
+
       describe '#order_refund' do
         it "refunds the customer" do
           api_response = @session.order_refund(@order_id, 0.01)
