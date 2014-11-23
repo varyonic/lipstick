@@ -73,7 +73,7 @@ describe 'Lipstick::Api::Session' do
     end
 
     context "existing order" do
-      before (:each) do
+      before (:all) do
         api_response = @session.new_order(order_params.merge(
           campaign_id: @campaign_id,
           product_id:  @product_id,
@@ -117,23 +117,9 @@ describe 'Lipstick::Api::Session' do
         end
       end
 
-      describe '#order_void' do
-        it "cancels a new order" do
-          api_response = @session.order_void(@order_id)
-          assert api_response.code == 100
-        end
-      end
-
       describe '#order_update1' do
         it 'posts chages to an order' do
           api_response = @session.order_update(@order_id, :tracking_number, 'LC123456789012345678US')
-          assert api_response.code == 100
-        end
-      end
-
-      describe '#order_update_recurring' do
-        it "cancels a new order" do
-          api_response = @session.order_update_recurring(@order_id,'stop')
           assert api_response.code == 100
         end
       end
@@ -152,8 +138,36 @@ describe 'Lipstick::Api::Session' do
           end
         end
       end
+    end # existing order
+
+    context "new order" do
+      before (:each) do
+        api_response = @session.new_order(order_params.merge(
+          campaign_id: @campaign_id,
+          product_id:  @product_id,
+          credit_card_type: @credit_card_type,
+          shipping_id: @shipping_method_id,
+          )
+        )
+        @customer_id = api_response.customer_id
+        @new_order_id = api_response.order_id
+      end
+
+      describe '#order_update_recurring' do
+        it "cancels a new order" do
+          api_response = @session.order_update_recurring(@new_order_id,'stop')
+          assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
+        end
+      end
+
+      describe '#order_void' do
+        it "cancels a new order" do
+          api_response = @session.order_void(@new_order_id)
+          assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
+        end
+      end
     end
-  end
+  end # sample campaign
 
   describe '#shipping_method_find' do
     it "finds shipping methods" do
