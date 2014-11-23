@@ -29,14 +29,7 @@ module Lipstick
 
       # Find all active campaigns.
       def campaign_find_active
-        call_api(:campaign_find_active) do |fields|
-          fields[:response_code] = fields[:response]
-          if fields[:response_code] == '100'
-            [:campaign_id, :campaign_name].each do |key|
-              fields[key] = CSV.parse_line(fields[key])
-            end
-          end
-        end
+        call_api(:campaign_find_active)
       end
 
       # Fetch details for a given campaign.

@@ -12,8 +12,9 @@ describe 'Lipstick::Api::Session' do
   describe '#campaign_find_active' do
     it "finds all active campaigns" do
       api_response = @session.campaign_find_active
-      assert api_response.code == 100
+      assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
       assert api_response.campaign_id.is_a?(Array)
+      assert api_response.campaign_id[0].is_a?(Integer)
       assert api_response.campaign_name.is_a?(Array)
     end
   end

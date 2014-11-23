@@ -111,6 +111,10 @@ module Lipstick
           @csv_fields ||= []
           @csv_fields = @csv_fields + args
         end
+        def int_csv_field(*args)
+          @int_csv_fields ||= []
+          @int_csv_fields = @int_csv_fields + args
+        end
       end
 
       def initialize(resp)
@@ -120,6 +124,9 @@ module Lipstick
         if @code == 100
           self.class.csv_field.each do |key|
             resp[key] = CSV.parse_line(resp[key])
+          end
+          self.class.int_csv_field.each do |key|
+            resp[key] = CSV.parse_line(resp[key]).map(&:to_i)
           end
         end
 
