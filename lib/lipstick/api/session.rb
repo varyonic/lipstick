@@ -106,6 +106,10 @@ module Lipstick
                  keep_recurring: keep_recurring ? '1' : '0')
       end
 
+      def order_update(order_id, action, value)
+        call_api(:order_update, order_ids: order_id, actions: action, values: value)
+      end
+
       def order_update_recurring(order_id, status)
         call_api(:order_update_recurring, order_id: order_id, status: status)
       end

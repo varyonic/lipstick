@@ -117,6 +117,13 @@ describe 'Lipstick::Api::Session' do
         end
       end
 
+      describe '#order_update1' do
+        it 'posts chages to an order' do
+          api_response = @session.order_update(@order_id, :tracking_number, 'LC123456789012345678US')
+          assert api_response.code == 100
+        end
+      end
+
       describe '#order_update_recurring' do
         it "cancels a new order" do
           api_response = @session.order_update_recurring(@order_id,'stop')
