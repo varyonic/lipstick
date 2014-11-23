@@ -99,6 +99,22 @@ module Lipstick
         end
       end
 
+      def order_find_updated(start_time, end_time, params = {})
+        params.merge!(
+          start_date: start_time.strftime('%m/%d/%Y'),
+          start_time: start_time.strftime('%H:%M:%S'),
+          end_date:   end_time.strftime('%m/%d/%Y'),
+          end_time:   end_time.strftime('%H:%M:%S'))
+        params[:campaign_id] ||= 'all'
+        call_api(:order_find_updated, params) do |fields|
+          if fields[:response_code] == '100'
+            [:order_ids].each do |key|
+              fields[key] = CSV.parse_line(fields[key]).map(&:to_i)
+            end
+          end
+        end
+      end
+
       def order_refund(order_id, amount, keep_recurring = true)
         call_api(:order_refund,
                  order_id: order_id,

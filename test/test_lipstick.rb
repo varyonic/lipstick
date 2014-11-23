@@ -130,6 +130,21 @@ describe 'Lipstick::Api::Session' do
           assert api_response.code == 100
         end
       end
+
+      context "updated order" do
+        before (:each) do
+          api_response = @session.order_update(@order_id, :tracking_number, 'LC123456789012345678US')
+        end
+
+        describe '#order_find_updated' do
+          it "finds updated orders" do
+            api_response = @session.order_find_updated(Time.now - 128, Time.now)
+            assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
+            assert api_response.order_ids.is_a?(Array)
+            assert api_response.order_ids[0].is_a?(Integer)
+          end
+        end
+      end
     end
   end
 
