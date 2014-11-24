@@ -46,17 +46,7 @@ module Lipstick
       # Create order for new customer
       def new_order(params)
         camelcase_params!(params)
-
-        call_api('NewOrder', params) do |fields|
-          fields.keys.each do |key|
-            fields[underscore(key.to_s).to_sym] = fields.delete(key)
-          end
-          if fields[:response_code] == '100'
-            fields[:test] = (fields[:test] == '1')
-            fields[:customer_id] = fields.delete(:customer_id).to_i
-            fields[:order_id] = fields.delete(:order_id).to_i
-          end
-        end
+        call_api('NewOrder', params)
       end
 
       def order_find(start_time, end_time, params = {})
@@ -147,6 +137,7 @@ module Lipstick
       end
 
       def camelize(str)
+        return str.to_s unless str.to_s.include?(?_)
         str.to_s.split("_").each {|s| s.capitalize! }.join
       end
 
