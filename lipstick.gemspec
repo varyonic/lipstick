@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
     "lib/lipstick/api/order_view_response.rb",
     "lib/lipstick/api/response.rb",
     "lib/lipstick/api/session.rb",
+    "lipstick.gemspec",
     "test/helper.rb",
     "test/test_lipstick.rb",
     "test/test_order_view_response.rb"
