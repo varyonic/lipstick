@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Piers Chambers"]
-  s.date = "2014-11-27"
+  s.date = "2014-11-28"
   s.description = "Unofficial ruby wrapper for the Lime Light CRM membership and transaction APIs"
   s.email = "piers@varyonic.com"
   s.extra_rdoc_files = [
