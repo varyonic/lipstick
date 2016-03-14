@@ -1,5 +1,8 @@
 = Lipstick
 
+{<img src="https://badge.fury.io/rb/lipstick.svg" alt="Gem Version" />}[http://badge.fury.io/rb/lipstick]
+{<img src="https://img.shields.io/gem/dtv/lipstick.svg?style=flat-square" alt="Downloads" />}[https://rubygems.org/gems/lipstick]
+
 Unofficial ruby wrapper for the following Lime Light CRM APIs:
 
 * {Membership API}[http://help.limelightcrm.com/entries/317874-Membership-API-Documentation]
