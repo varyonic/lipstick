@@ -10,7 +10,17 @@ Unofficial ruby wrapper for the following Lime Light CRM APIs:
 
 Note this wrapper attempts to fix some of the inconsistencies in the underlying APIs.
 
-To run the tests you will need your own Lime Light CRM account with a valid campaign and test payment method.
+To run the tests you will need your own Lime Light CRM account with a valid campaign and test payment method.  Populate ~/.lipstick/fixtures.yml as follows:
+
+  credentials:
+    url: https://.../admin
+    username: ...
+    password: ...
+  test_card_number: '4...........'
+
+Run the tests with:
+
+  bundle exec ruby -I lib:test test/test_lipstick.rb -v
 
 == Contributing to lipstick
  
