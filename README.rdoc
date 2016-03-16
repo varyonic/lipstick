@@ -10,6 +10,8 @@ Unofficial ruby wrapper for the following Lime Light CRM APIs:
 
 Note this wrapper attempts to fix some of the inconsistencies in the underlying APIs.
 
+Online documentation is available at {rubydoc.info}[http://www.rubydoc.info/github/varyonic/lipstick/master/frames]
+
 To run the tests you will need your own Lime Light CRM account with a valid campaign and test payment method.  Populate ~/.lipstick/fixtures.yml as follows:
 
   credentials:
