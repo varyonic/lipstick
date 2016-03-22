@@ -3,6 +3,7 @@
 [![Version](https://badge.fury.io/rb/lipstick.svg)](http://badge.fury.io/rb/lipstick)
 [![Downloads](https://img.shields.io/gem/dtv/lipstick.svg?style=flat-square)](https://rubygems.org/gems/lipstick)
 [![Dependency Status](https://gemnasium.com/varyonic/lipstick.svg)](https://gemnasium.com/varyonic/lipstick)
+[![Inline docs](http://inch-ci.org/github/varyonic/lipstick.svg)](http://inch-ci.org/github/varyonic/lipstick)
 
 Unofficial ruby wrapper for the following Lime Light CRM APIs:
 
