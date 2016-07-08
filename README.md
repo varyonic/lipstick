@@ -29,6 +29,8 @@ Run the tests with:
   bundle exec ruby -I lib:test test/test_lipstick.rb -v
 ```
 
+Manual cleanup may be required before re-running tests.
+
 ## Contributing to lipstick
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
