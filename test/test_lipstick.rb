@@ -3,6 +3,8 @@ require 'helper'
 include Lipstick::Fixtures
 
 describe 'Lipstick::Api::Session' do
+  i_suck_and_my_tests_are_order_dependent!
+
   before(:each) do
     params = fixtures(:credentials)
     params[:logger] = Logger.new(STDOUT) if ENV['DEBUG_LIPSTICK'] == 'true'
@@ -22,9 +24,10 @@ describe 'Lipstick::Api::Session' do
   describe '#campaign_view' do
     it 'fetches attributes of a campaign' do
       api_response = @session.campaign_find_active
+      assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
       campaign_id = api_response.campaign_id.sample
       api_response = @session.campaign_view(campaign_id)
-      assert api_response.code == 100
+      assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
       assert api_response.product_id.is_a?(Array)
       assert api_response.shipping_id.is_a?(Array)
     end
@@ -51,6 +54,7 @@ describe 'Lipstick::Api::Session' do
     end
     before (:all) do
       api_response = @session.campaign_find_active
+      assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
       @campaign_id = api_response.campaign_id.sample
       @campaign = @session.campaign_view(@campaign_id)
       @product_id = @campaign.product_id.sample
@@ -61,7 +65,7 @@ describe 'Lipstick::Api::Session' do
     describe '#new_order' do
       it 'creates order' do
         api_response = @session.new_order(order_params)
-        assert api_response.code == 100
+        assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
         assert api_response.test, "Expected #{api_response.test.inspect} to be true"
         assert api_response.customer_id.is_a?(Integer), "Expected #{api_response.customer_id.inspect} to be an integer"
         assert api_response.order_id.is_a?(Integer)
@@ -73,6 +77,7 @@ describe 'Lipstick::Api::Session' do
     context 'existing order' do
       before (:all) do
         api_response = @session.new_order(order_params)
+        assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
         @order_id = api_response.order_id
         @customer_id = api_response.customer_id
       end
@@ -80,7 +85,7 @@ describe 'Lipstick::Api::Session' do
       describe '#customer_find_active_product' do
         it 'fetches product ids' do
           api_response = @session.customer_find_active_product(@customer_id)
-          assert api_response.code == 100
+          assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
           assert api_response.product_ids.is_a?(Array)
           assert api_response.product_ids[0].is_a?(Integer)
         end
@@ -98,7 +103,7 @@ describe 'Lipstick::Api::Session' do
       describe '#order_refund' do
         it 'refunds the customer' do
           api_response = @session.order_refund(@order_id, 0.01)
-          assert api_response.code == 100
+          assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
         end
       end
 
@@ -112,13 +117,14 @@ describe 'Lipstick::Api::Session' do
       describe '#order_update1' do
         it 'posts chages to an order' do
           api_response = @session.order_update(@order_id, :tracking_number, 'LC123456789012345678US')
-          assert api_response.code == 100
+          assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
         end
       end
 
       context 'updated order' do
         before (:each) do
           api_response = @session.order_update(@order_id, :tracking_number, 'LC123456789012345678US')
+          assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
         end
 
         describe '#order_find_updated' do
@@ -135,6 +141,7 @@ describe 'Lipstick::Api::Session' do
     context 'new order' do
       before (:each) do
         api_response = @session.new_order(order_params)
+        assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
         @new_order_id = api_response.order_id
       end
 
@@ -157,7 +164,7 @@ describe 'Lipstick::Api::Session' do
   describe '#shipping_method_find' do
     it 'finds shipping methods' do
       api_response = @session.shipping_method_find
-      assert api_response.code == 100
+      assert api_response.code == 100, "unexpected response: #{api_response.inspect}"
       assert api_response.shipping_ids.is_a?(Array)
       assert api_response.shipping_ids[0].is_a?(Integer)
     end
