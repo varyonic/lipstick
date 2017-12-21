@@ -1,4 +1,6 @@
 require 'csv'
+require 'net/http'
+require 'openssl'
 
 module Lipstick
   module Api
