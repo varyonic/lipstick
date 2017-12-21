@@ -1,17 +1,12 @@
 Gem::Specification.new do |s|
   s.name = "lipstick"
-  s.version = "1.1.0"
+  s.version = "1.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Piers Chambers"]
-  s.date = "2017-04-07"
   s.description = "Unofficial ruby wrapper for the Lime Light CRM membership and transaction APIs"
   s.email = "piers@varyonic.com"
-  s.extra_rdoc_files = [
-    "LICENSE.txt",
-    "README.md"
-  ]
   s.files = [
     ".document",
     "Gemfile",
@@ -31,9 +26,6 @@ Gem::Specification.new do |s|
     "lib/lipstick/api/response.rb",
     "lib/lipstick/api/session.rb",
     "lipstick.gemspec",
-    "test/helper.rb",
-    "test/test_lipstick.rb",
-    "test/test_order_view_response.rb"
   ]
   s.homepage = "http://github.com/varyonic/lipstick"
   s.licenses = ["MIT"]
