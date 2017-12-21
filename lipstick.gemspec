@@ -41,8 +41,7 @@ Gem::Specification.new do |s|
   s.summary = "Unofficial ruby wrapper for the Lime Light CRM APIs."
 
   s.add_development_dependency(%q<minitest>, ["~> 0"])
-  s.add_development_dependency(%q<yard>, ["~> 0.7"])
-  s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
+  s.add_development_dependency(%q<yard>, ["~> 0.9.11"])
   s.add_development_dependency(%q<bundler>, ["~> 1.0"])
   s.add_development_dependency(%q<simplecov>, ["~> 0"])
 end
