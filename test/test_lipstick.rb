@@ -5,8 +5,14 @@ include Lipstick::Fixtures
 describe 'Lipstick::Api::Session' do
   i_suck_and_my_tests_are_order_dependent!
 
+  let(:url) { ENV.fetch('LIPSTICK_TEST_URL') }
+  let(:username) { ENV.fetch('LIPSTICK_TEST_USERNAME') }
+  let(:password) { ENV.fetch('LIPSTICK_TEST_PASSWORD') }
+
+  let(:card_number) { ENV.fetch('LIPSTICK_TEST_CARD_NUMBER') }
+
   before(:each) do
-    params = fixtures(:credentials)
+    params = { url: url, username: username, password: password }
     params[:logger] = Logger.new(STDOUT) if ENV['DEBUG_LIPSTICK'] == 'true'
     @session = Lipstick::Api::Session.new(params)
   end
@@ -43,7 +49,7 @@ describe 'Lipstick::Api::Session' do
         phone:      '(555)555-5555',
         email:      'test@test.com', # jim.smith@example.com'
         credit_card_type: @credit_card_type,
-        credit_card_number: fixtures(:test_card_number),
+        credit_card_number: card_number,
         expiration_date: '1219',
         'CVV' => '123',
         tran_type: 'NewOrder',
@@ -177,7 +183,7 @@ describe 'Lipstick::Api::Session' do
     end
 
     it 'returns false if credentials invalid' do
-      invalid_credentials = fixtures(:credentials).merge!(password: 'invalid')
+      invalid_credentials = { url: url, username: username, password: 'invalid' }
       @invalid_session = Lipstick::Api::Session.new(invalid_credentials)
       api_response = @invalid_session.validate_credentials
       assert api_response.code == 200, 'Invalid credentials not detected.'

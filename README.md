@@ -13,22 +13,24 @@ Note this wrapper attempts to fix some of the inconsistencies in the underlying 
 
 Online documentation is available at [rubydoc.info](http://www.rubydoc.info/github/varyonic/lipstick/master/frames)
 
-To run the tests you will need your own Lime Light CRM account with a valid campaign and test payment method.  Populate ~/.lipstick/fixtures.yml as follows:
+## Running the tests
+
+To run the tests you will need your own Lime Light CRM account with a valid campaign and test payment method.  Populate environment variables as follows:
 
 ```
-  credentials:
-    url: https://.../admin
-    username: ...
-    password: ...
-  test_card_number: '4...........'
+export LIPSTICK_TEST_URL=https://my_test_account.limelightcrm.com/admin
+export LIPSTICK_TEST_USERNAME=...
+export LIPSTICK_TEST_PASSWORD=...
+export LIPSTICK_TEST_CARD_NUMBER=4012.......8181
 ```
+
 Run the tests with:
 
 ```
   bundle exec ruby -I lib:test test/test_lipstick.rb -v
 ```
 
-Manual cleanup may be required before re-running tests.
+Manual cleanup of test orders may be required before re-running tests.
 
 ## Contributing to lipstick
  
@@ -40,6 +42,6 @@ Manual cleanup may be required before re-running tests.
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
-Copyright (c) 2014 Piers Chambers and South Beach Skin Care, LLC. See LICENSE.txt for
+Copyright (c) 2014-2019 Piers Chambers and South Beach Skin Care, LLC. See LICENSE.txt for
 further details.
 
